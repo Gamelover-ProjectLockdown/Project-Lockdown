@@ -15,6 +15,6 @@ HTML5 Canvas로 만든 탑다운 액션 프로토타입입니다. 메인 메뉴�
 
 ## 실행과 배포
 
-이 폴더의 `index.html`과 `system-combat.js`를 같은 폴더에 두고 브라우저에서 `index.html`을 엽니다. GitHub Pages에 게시하려면 이 폴더의 내용물을 저장소 루트에 올리고, 저장소 설정의 **Pages → Deploy from a branch → main → / (root)**를 선택합니다.
+이 폴더의 `index.html`과 `system-combat.js`를 같은 폴더에 두고 브라우저에서 `index.html`을 엽니다. GitHub Pages에 게시하려면 이 폴더의 내용물을 저장소 루트에 올리고, 저장소 설정의 **Pages → Deploy from a branch → system-test-v2 → / (root)**를 선택합니다.
 
-이 공개용 패키지는 일부 외부 음원, 메뉴 배경 이미지, SAM 음성 파일을 제외한 버전입니다. 총성과 일부 타격음에는 게임의 합성 효과음을 사용합니다.
+메뉴 이미지와 총기·플라즈마 샘플을 포함합니다. SAM 음성과 일부 근접·탄착 샘플은 제외되어 있습니다.

@@ -8,7 +8,7 @@
 html,body{margin:0;height:100%;overflow:hidden;background:#050608;font-family:monospace}
 #wrap{position:fixed;inset:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#050607}
 canvas{display:block;width:100vw;height:100vh;image-rendering:pixelated;image-rendering:crisp-edges;background:#0c1011}
-#startScreen{position:fixed;inset:0;display:flex;align-items:center;background:#080b0b radial-gradient(ellipse at 70% 35%, #293c39, #080b0b 72%);z-index:20}
+#startScreen{position:fixed;inset:0;display:flex;align-items:center;background:#080b0b url('main-menu.png') center center/cover no-repeat;z-index:20}
 #startScreen::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.82),rgba(0,0,0,.28) 42%,transparent 70%)}
 #startScreen.hidden{opacity:0;pointer-events:none}
 #startPanel{position:relative;box-sizing:border-box;width:min(440px,88vw);margin-left:6vw;padding:24px;color:#d9ddd8;text-shadow:0 2px 14px #000}
@@ -67,6 +67,8 @@ canvas{display:block;width:100vw;height:100vh;image-rendering:pixelated;image-re
   </div>
   <div style="margin-top:10px;color:#9eaead">실제 게임 렌더러 · 전투/AI 정지 · 휠로 확대 · 큰 오브젝트는 배율을 낮춰 확인</div>
 </div>
+<script src="plasma-audio-samples.js"></script>
+<script src="plasma-sustain-samples.js"></script>
 <script src="system-combat.js"></script>
 <script>
 (()=>{'use strict';
@@ -288,6 +290,7 @@ if(masterGainNode)masterGainNode.connect(gunAudioContext.destination);
 const backgroundMusic=new Audio();
 backgroundMusic.loop=true;
 backgroundMusic.preload='auto';
+backgroundMusic.src='Sub-Level%20Lockdown.mp3';
 function applyAudioSettings(){
   if(masterGainNode)masterGainNode.gain.value=masterVolumeLevel/100;
   backgroundMusic.volume=(masterVolumeLevel/100)*(musicVolumeLevel/100);
@@ -303,7 +306,7 @@ function applyAudioSettings(){
 applyAudioSettings();
 let backgroundMusicStarted=false;
 function ensureBackgroundMusic(){
-  if(!backgroundMusic.getAttribute('src')||(backgroundMusicStarted&&!backgroundMusic.paused))return;
+  if(backgroundMusicStarted&&!backgroundMusic.paused)return;
   backgroundMusicStarted=true;
   backgroundMusic.play().catch(error=>{
     backgroundMusicStarted=false;
@@ -330,7 +333,7 @@ const gunshotBuffers=gunAudioContext?{
 // 여러 HTMLAudio 보이스를 순환시킨다. 로컬 file:// 실행에서도 별도 fetch 없이 재생된다.
 const rimfireShotVoices=Array.from({length:16},()=>{
   // 쿼리는 이전 .22 샘플이 브라우저 캐시에 남아 재생되는 것을 막는다.
-  const audio=new Audio();
+  const audio=new Audio('L2.mp3?v=rimfire-3');
   audio.preload='auto';
   return audio;
 });
@@ -338,7 +341,7 @@ let rimfireShotVoiceIndex=0;
 // Separate shot and rearward/forward pump transients; never replay the full recording.
 const shotgunSampleVoices=Object.fromEntries(['shot','pump-back','pump-forward'].map(part=>[
   part,Array.from({length:part==='shot'?8:3},()=>{
-    const voice=new Audio();
+    const voice=new Audio(`shotgun-${part}.mp3?v=${part==='shot'?2:3}`);
     voice.preload='auto';return voice;
   })
 ]));
@@ -430,7 +433,7 @@ function playMeleeSample(name,volume=1,pitch=1,x=player.x,y=player.y){
 }
 function playMeleeImpactSound(kind,amount,x,y,weaponId=''){
   if(kind==='blade'&&['longsword','armingSword'].includes(weaponId)){
-    // Fall through to the synthesized blade impact.
+    // Use the synthesized blade impact.
   }
   if(!gunAudioContext||!masterGainNode||meleeImpactVoices>=10)return;
   if(gunAudioContext.state==='suspended'){
@@ -517,11 +520,10 @@ function gunshotAcousticGain(actor){
 function playGunshot(def,ammoId=null,actor=guardWeaponContextActor){
   const acousticGain=gunshotAcousticGain(actor);
   if(isDoubleBarrelId(def.id)||def.id==='pumpShotgun'){
-    if(gunAudioContext)playProceduralGunshot(def,acousticGain);
-    return;
+    playShotgunSample('shot',acousticGain);return;
   }
   if(weaponUses22LR(def)){
-    if(gunAudioContext)playProceduralGunshot(def,acousticGain);
+    play22LRGunshot(def,ammoId,acousticGain);
     return;
   }
   if(!gunAudioContext)return;
@@ -7719,14 +7721,14 @@ function plasmaMuzzleWorld(){
 
 const plasmaShotLayerPools=['L1.mp3','L2.mp3'].map((file,layer)=>
   Array.from({length:8},()=>{
-    const audio=new Audio();
+    const audio=new Audio(`${file}?v=1`);
     audio.preload='auto';
     audio.datasetLayer=String(layer+1);
     return audio;
   })
 );
 let plasmaShotVoiceIndex=0;
-const plasmaChargeVoice=new Audio();
+const plasmaChargeVoice=new Audio('L3.mp3?v=2');
 plasmaChargeVoice.preload='auto';
 plasmaChargeVoice.loop=false;
 plasmaChargeVoice.preservesPitch=false;
