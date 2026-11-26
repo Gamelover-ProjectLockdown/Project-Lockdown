@@ -17,4 +17,4 @@ HTML5 Canvas로 만든 탑다운 액션 프로토타입입니다. 메인 메뉴�
 
 이 폴더의 `index.html`과 `system-combat.js`를 같은 폴더에 두고 브라우저에서 `index.html`을 엽니다. GitHub Pages에 게시하려면 이 폴더의 내용물을 저장소 루트에 올리고, 저장소 설정의 **Pages → Deploy from a branch → system-test-v2 → / (root)**를 선택합니다.
 
-메뉴 이미지와 총기·플라즈마 샘플을 포함합니다. SAM 음성과 일부 근접·탄착 샘플은 제외되어 있습니다.
+메뉴 이미지와 총기·플라즈마 샘플을 포함합니다. 대사는 [SAM 웹 배포본](https://discordier.github.io/sam/)을 불러와 재생합니다. 일부 근접·탄착 샘플은 제외되어 있습니다.

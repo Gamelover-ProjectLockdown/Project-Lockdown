@@ -67,6 +67,7 @@ canvas{display:block;width:100vw;height:100vh;image-rendering:pixelated;image-re
   </div>
   <div style="margin-top:10px;color:#9eaead">실제 게임 렌더러 · 전투/AI 정지 · 휠로 확대 · 큰 오브젝트는 배율을 낮춰 확인</div>
 </div>
+<script src="https://discordier.github.io/sam/dist/samjs.min.js"></script>
 <script src="plasma-audio-samples.js"></script>
 <script src="plasma-sustain-samples.js"></script>
 <script src="system-combat.js"></script>
@@ -6548,18 +6549,6 @@ function makeSamVoiceBuffer(text,preset){
     return null;
   }
 }
-function fallbackCombatTts(text,actor,volume){
-  if(!('speechSynthesis' in window))return false;
-  try{
-    const u=new SpeechSynthesisUtterance(text);
-    u.volume=clamp(volume*(masterVolumeLevel/100),0,.34);
-    u.rate=actor&&actor.isAlly?1.05:.99;
-    u.pitch=actor&&actor.isAlly?.82:.68;
-    u.lang='en-US';
-    speechSynthesis.speak(u);
-    return true;
-  }catch(_e){return false}
-}
 function playSamCombatVoice(text,actor,samOnly=false){
   // 날카로운 SAM 음성이 한꺼번에 겹쳐 전투음을 덮지 않도록 실제 재생은 최대 3개.
   // 청각용 soundEvent는 이 함수 전에 이미 발생하므로 AI 감지는 그대로 유지된다.
@@ -6577,7 +6566,6 @@ function playSamCombatVoice(text,actor,samOnly=false){
   const buffer=makeSamVoiceBuffer(text,preset);
   if(!buffer||!gunAudioContext){
     // 샌드박스 군인은 잘못된 기본 TTS로 바꾸지 않고 SAM이 준비될 때만 말한다.
-    if(!samOnly)fallbackCombatTts(text,actor,volume);
     return false;
   }
   try{
@@ -6600,7 +6588,6 @@ function playSamCombatVoice(text,actor,samOnly=false){
     return true;
   }catch(error){
     console.warn('SAM voice playback failed:',error);
-    if(!samOnly)fallbackCombatTts(text,actor,volume);
     return false;
   }
 }
